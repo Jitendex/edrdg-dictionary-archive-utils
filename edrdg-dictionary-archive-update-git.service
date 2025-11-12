@@ -1,0 +1,58 @@
+# /etc/systemd/system/edrdg-dictionary-archive-update-git.service
+
+[Unit]
+Description=edrdg-dictionary-archive git update script
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/fish edrdg-dictionary-archive/scripts/update_git.fish
+Environment=TZ="Etc/UTC"
+User=edrdg-dictionary-archive
+Group=edrdg-dictionary-archive
+WorkingDirectory=~
+
+# Security hardening
+# See: https://wiki.archlinux.org/title/Systemd/Sandboxing
+
+# Generate a security score and list of suggestions by running
+# `systemd-analyze security edrdg-dictionary-archive-update-git.service`
+
+# Capabilities
+AmbientCapabilities=
+CapabilityBoundingSet=
+
+# Common directives
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+NoNewPrivileges=yes
+PrivateDevices=yes
+PrivateNetwork=no
+PrivateTmp=yes
+PrivateUsers=yes
+RestrictNamespaces=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+
+# Configurable directives
+ProtectSystem=strict
+ProtectHome=no
+ProtectProc=invisible
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+
+# Advanced directives
+DevicePolicy=closed
+DynamicUser=no
+ProcSubset=pid
+ProtectClock=yes
+ProtectControlGroups=yes
+ProtectHostname=yes
+ProtectKernelLogs=yes
+ProtectKernelModules=yes
+ProtectKernelTunables=yes
+RemoveIPC=yes
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+SystemCallFilter=~@privileged @resources
+UMask=0077
