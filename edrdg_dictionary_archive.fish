@@ -1,5 +1,8 @@
 #!/usr/bin/env fish
 #
+# edrdg_dictionary_archive.fish
+# Version 2025.11.12.0
+#
 # Copyright (c) 2025 Stephen Kraus
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -27,6 +30,7 @@ set FILENAMES \
     'kanjidic2.xml' \
     'examples.utf'
 
+set HTTPS_REPO "https://github.com/Jitendex/edrdg-dictionary-archive"
 set REMOTE 'origin'
 set BRANCH 'main'
 
@@ -423,6 +427,9 @@ function _print_usage
     Options:
       -h, --help       Print this message
       -r, --repo-dir   Path to the local edrdg-dictionary-archive Git repo
+      -i, --init       Download the edrdg-dictionary-archive Git repo from
+                       $HTTPS_REPO
+                       if it doesn't already exist
       -f, --file       Name of the specific file to `get`. Must be one of
                        $(string join ' ' $FILENAMES)
       -d, --date       Date of the specific file to `get`
@@ -435,6 +442,7 @@ function main
     argparse \
         'h/help' \
         'r/repo-dir=!test -d "$_flag_value"' \
+        'i/init' \
         'f/file=!string match -rq \'^'(string join '|' $FILENAMES)'$\' "$_flag_value"' \
         'd/date=!string match -rq \'^[0-9]{4}-[0-1][0-9]-[0-3][0-9]$\' "$_flag_value"' \
         'l/latest' \
@@ -469,12 +477,17 @@ function main
     end
 
     if not test -e "$DATA_DIR"
-        set repo "https://github.com/Jitendex/edrdg-dictionary-archive"
         echo "Data directory not found: $DATA_DIR" >&2
-        echo "Cloning repo from '$repo' to '$DATA_DIR" >&2
-        git clone "https://github.com/Jitendex/edrdg-dictionary-archive" "$DATA_DIR"
-        or begin
-            echo "Directory '$DATA_DIR' does not exist and could not be initialized" >&2
+        if set -q _flag_init
+            echo "Cloning repo from '$HTTPS_REPO' to '$DATA_DIR" >&2
+            git clone "$HTTPS_REPO" "$DATA_DIR"
+            or begin
+                echo "Directory '$DATA_DIR' does not exist and could not be initialized" >&2
+                return 1
+            end
+        else
+            echo "Use the --init option to initialize the data directory at '$DATA_DIR'" >&2
+            echo "Data will be downloaded from '$HTTPS_REPO'"
             return 1
         end
     else if not test -d "$DATA_DIR"
