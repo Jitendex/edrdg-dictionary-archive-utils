@@ -435,9 +435,9 @@ function _print_usage
                        if it doesn't already exist.
 
     Options for the 'get' Command
-      -f, --file=      Name of the specific file to `get`. Must be one of
+      -f, --file=      Name of the specific file to 'get'. Must be one of
                        $(string join ' ' $FILENAMES)
-      -d, --date=      Date of the file to `get`. Format YYYY-MM-DD.
+      -d, --date=      Date of the file to 'get'. Format YYYY-MM-DD.
       -l, --latest     Instead of specifying a date, use the most recent available.
 " >&2
 end
