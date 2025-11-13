@@ -1,7 +1,7 @@
 #!/usr/bin/env fish
 #
 # edrdg_dictionary_archive.fish
-# Version 2025.11.12.2
+# Version 2025.11.12.3
 #
 # Copyright (c) 2025 Stephen Kraus
 # SPDX-License-Identifier: Apache-2.0
@@ -445,7 +445,7 @@ function _print_usage
                        $(string join ' ' $FILENAMES)
       -d, --date=      Date of the file to 'get'. Format YYYY-MM-DD.
       -l, --latest     Instead of specifying a date, use the most recent available.
-" >&2
+    " >&2
 end
 
 function main
@@ -497,7 +497,7 @@ function main
             end
         else
             echo "Use the --init option to initialize the data directory at '$DATA_DIR'" >&2
-            echo "Data will be downloaded from '$HTTPS_REPO'"
+            echo "Data will be downloaded from '$HTTPS_REPO'" >&2
             return 1
         end
     else if not test -d "$DATA_DIR"
