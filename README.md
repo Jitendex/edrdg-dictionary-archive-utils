@@ -67,5 +67,5 @@ for the first time.
 
 In addition to the the `fish` shell and the standard GNU coreutils
 (`mkdir`, `cp`, `rm`, `date`, etc.), these scripts also expect the
-commands `git`, `rsync`, `brotli`, `patch`, `diff`, `cmp`, and `grep`
-to be available.
+commands `git`, `rsync`, `brotli`, `patch`, `diff`, `cmp`, `grep`,
+and `uuidgen` to be available.
