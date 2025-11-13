@@ -59,12 +59,14 @@ function _get_cache_dir -a file_date
 end
 
 function _make_tmp_dir
-    set tmp_dir '/tmp/edrdg-dictionary-archive-'(uuidgen | cut -c1-8)
+    set uuid (uuidgen | cut -c1-8)
+    set tmp_dir "/tmp/edrdg-dictionary-archive-$uuid"
 
     echo "Creating temporary working directory '$tmp_dir'" >&2
     mkdir -p -m 700 "$tmp_dir"
 
-    function tmp_dir_cleanup --inherit-variable tmp_dir --on-event fish_exit
+    # Ensure directory gets removed even if script exits early or crashes.
+    function tmp_dir_cleanup_$uuid --inherit-variable tmp_dir --on-event fish_exit
         if test -d "$tmp_dir"
             echo "Deleting temporary working directory '$tmp_dir'" >&2
             rm -r "$tmp_dir"
@@ -206,6 +208,8 @@ function _get_file_by_date -a file_name file_date
         --output="$output_file" \
         -- "$tmp_dir"/"$file_name"
 
+    rm -r "$tmp_dir"
+
     echo "$output_file"
 end
 
@@ -346,6 +350,8 @@ function _make_new_patch -a file_name
             rm -d "$old_dir"
         end
     end
+
+    rm -r "$tmp_dir"
 
     echo "$archived_patch_path"
 end
