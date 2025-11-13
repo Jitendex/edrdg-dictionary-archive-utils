@@ -422,7 +422,7 @@ function _print_usage
     Usage: edrdg_dictionary_archive [OPTIONS] command
 
     Commands:
-      get       Build a specified file and print its path
+      get       Build a specified file and print its path.
       update    Get the latest file data from '$RSYNC_SRC',
                 add the patches to the archive, and commit to Git.
 

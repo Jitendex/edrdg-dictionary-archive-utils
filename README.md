@@ -10,7 +10,7 @@ to the archive.
 Usage: edrdg_dictionary_archive [OPTIONS] command
 
 Commands:
-  get       Build a specified file and print its path
+  get       Build a specified file and print its path.
   update    Get the latest file data from 'ftp.edrdg.org::nihongo',
             add the patches to the archive, and commit to Git.
 
