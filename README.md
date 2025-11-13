@@ -22,7 +22,7 @@ General Options
                    https://github.com/Jitendex/edrdg-dictionary-archive
                    if it doesn't already exist.
 
-Options for 'get' Command
+Options for the 'get' Command
   -f, --file=      Name of the specific file to `get`. Must be one of
                      JMdict
                      JMdict_e

@@ -432,7 +432,7 @@ function _print_usage
                        $HTTPS_REPO
                        if it doesn't already exist.
 
-    Options for 'get' Command
+    Options for the 'get' Command
       -f, --file=      Name of the specific file to `get`. Must be one of
                        $(string join ' ' $FILENAMES)
       -d, --date=      Date of the file to `get`. Format YYYY-MM-DD.
