@@ -57,6 +57,12 @@ file will be applied to it to get the file for 2025-11-02. Otherwise,
 hundreds of patches would be applied to the repo's original base file
 (from 2023) to get to 2025.
 
+> [!WARNING]
+> Patching these large XML files is computationally expensive, and it
+> may take several minutes to patch a base file from 2023 to the latest
+> version. If the latest version of a file is all you need, you should
+> get it from the EDRDG FTP server instead.
+
 # Updating the Archive
 
 The `update` command builds the latest archived version of each file
