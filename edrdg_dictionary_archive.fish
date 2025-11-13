@@ -1,8 +1,6 @@
 #!/usr/bin/env fish
 #
 # edrdg_dictionary_archive.fish
-# Version 2025.11.12.4
-#
 # Copyright (c) 2025 Stephen Kraus
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -18,9 +16,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set COMMANDS \
-    'get' \
-    'update'
+set VERSION '2025.11.12.4'
 
 set FILENAMES \
     'JMdict' \
@@ -425,32 +421,49 @@ end
 
 function _print_usage
     echo "
-    Usage: edrdg_dictionary_archive [OPTIONS] command
+    Usage: edrdg_dictionary_archive [OPTIONS] <command>
 
-    Commands:
-      get       Build a specified file and print its path.
-      update    Get the latest file data from '$RSYNC_SRC',
-                add the patches to the archive, and commit to Git.
+    Commands
+      get
+          Build a specified file and print its path.
+
+      update
+          Get the latest file data from '$RSYNC_SRC',
+          add the patches to the archive, and commit to Git.
 
     General Options
-      -h, --help       Print this message.
-      -r, --repo-dir=  Path to the local edrdg-dictionary-archive Git repo.
-                       Default: '$(_get_data_dir)'
-      -i, --init       Download the edrdg-dictionary-archive Git repo from
-                       $HTTPS_REPO
-                       if it doesn't already exist.
+      -h, --help
+          Print this message.
+
+      -v, --version
+          Print the version of this script.
+
+      -r, --repo-dir=<path>
+          Path to the local edrdg-dictionary-archive Git repo.
+          Default: '$(_get_data_dir)'
+
+      -i, --init
+          Download the edrdg-dictionary-archive Git repo from
+          $HTTPS_REPO
+          if it doesn't already exist.
 
     Options for the 'get' Command
-      -f, --file=      Name of the specific file to 'get'. Must be one of
-                       $(string join ' ' $FILENAMES)
-      -d, --date=      Date of the file to 'get'. Format YYYY-MM-DD.
-      -l, --latest     Instead of specifying a date, use the most recent available.
+      -f, --file=<file>
+          Name of the file to get. Must be one of
+          $(string join ' ' $FILENAMES)
+
+      -d, --date=<YYYY-MM-DD>
+          Date of the file to get.
+
+      -l, --latest
+          Instead of specifying a date, use the most recent available.
     " >&2
 end
 
 function main
     argparse \
         'h/help' \
+        'v/version' \
         'r/repo-dir=!test -d "$_flag_value"' \
         'i/init' \
         'f/file=!string match -rq \'^'(string join '|' $FILENAMES)'$\' "$_flag_value"' \
@@ -465,6 +478,11 @@ function main
 
     if set -q _flag_help
         _print_usage
+        return
+    end
+
+    if set -q _flag_version
+        echo "$VERSION"
         return
     end
 

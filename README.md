@@ -7,31 +7,47 @@ be easily rebuilt from those patches and for new patches to be written
 to the archive.
 
 ```
-Usage: edrdg_dictionary_archive [OPTIONS] command
+Usage: edrdg_dictionary_archive [OPTIONS] <command>
 
-Commands:
-  get       Build a specified file and print its path.
-  update    Get the latest file data from 'ftp.edrdg.org::nihongo',
-            add the patches to the archive, and commit to Git.
+Commands
+  get
+      Build a specified file and print its path.
+
+  update
+      Get the latest file data from 'ftp.edrdg.org::nihongo',
+      add the patches to the archive, and commit to Git.
 
 General Options
-  -h, --help       Print this message.
-  -r, --repo-dir=  Path to the local edrdg-dictionary-archive Git repo.
-                   Default: '$XDG_DATA_HOME/edrdg-dictionary-archive'
-  -i, --init       Download the edrdg-dictionary-archive Git repo from
-                   https://github.com/Jitendex/edrdg-dictionary-archive
-                   if it doesn't already exist.
+  -h, --help
+      Print this message.
+
+  -v, --version
+      Print the version of this script.
+
+  -r, --repo-dir=<path>
+      Path to the local edrdg-dictionary-archive Git repo.
+      Default: '$XDG_DATA_HOME/edrdg-dictionary-archive'
+
+  -i, --init
+      Download the edrdg-dictionary-archive Git repo from
+      https://github.com/Jitendex/edrdg-dictionary-archive
+      if it doesn't already exist.
 
 Options for the 'get' Command
-  -f, --file=      Name of the specific file to 'get'. Must be one of
-                     JMdict
-                     JMdict_e
-                     JMdict_e_examp
-                     JMnedict.xml
-                     kanjidic2.xml
-                     examples.utf
-  -d, --date=      Date of the file to 'get'. Format YYYY-MM-DD.
-  -l, --latest     Instead of specifying a date, use the most recent available.
+  -f, --file=<file>
+      Name of the file to get. Must be one of
+        JMdict
+        JMdict_e
+        JMdict_e_examp
+        JMnedict.xml
+        kanjidic2.xml
+        examples.utf
+
+  -d, --date=<YYYY-MM-DD>
+      Date of the file to get.
+
+  -l, --latest
+      Instead of specifying a date, use the most recent available.
 ```
 
 # Building a File
