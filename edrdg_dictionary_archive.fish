@@ -229,6 +229,8 @@ function _get_file_date -a file_name file_path
             grep -m 1 '^<date_of_creation>' "$file_path" | grep -Eo "$date_pattern"
         case 'examples.utf'
             date '+%Y-%m-%d'
+        case '*'
+            return 1
     end
 end
 
@@ -495,7 +497,7 @@ function main
             else if set -q _flag_latest
                 _get_latest_file "$file_name"
             else
-                echo 'Either DATE or --latest flag must be specified' >&2
+                echo 'Either --date or --latest flag must be specified' >&2
                 _print_usage
                 return 1
             end
