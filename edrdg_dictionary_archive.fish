@@ -1,7 +1,7 @@
 #!/usr/bin/env fish
 #
 # edrdg_dictionary_archive.fish
-# Version 2025.11.12.0
+# Version 2025.11.12.1
 #
 # Copyright (c) 2025 Stephen Kraus
 # SPDX-License-Identifier: Apache-2.0
@@ -424,17 +424,19 @@ function _print_usage
       update    Get the latest file data from the EDRDG FTP server,
                 add the patches to the archive, and commit to Git.
 
-    Options:
-      -h, --help       Print this message
-      -r, --repo-dir   Path to the local edrdg-dictionary-archive Git repo
+    General Options
+      -h, --help       Print this message.
+      -r, --repo-dir=  Path to the local edrdg-dictionary-archive Git repo.
+                       Default: '$(_get_data_dir)'
       -i, --init       Download the edrdg-dictionary-archive Git repo from
                        $HTTPS_REPO
-                       if it doesn't already exist
-      -f, --file       Name of the specific file to `get`. Must be one of
+                       if it doesn't already exist.
+
+    Options for 'get' Command
+      -f, --file=      Name of the specific file to `get`. Must be one of
                        $(string join ' ' $FILENAMES)
-      -d, --date       Date of the specific file to `get`
-                       Must be in the format 'YYYY-MM-DD'
-      -l, --latest     Use the most recent date of a file for `get`
+      -d, --date=      Date of the file to `get`. Format YYYY-MM-DD.
+      -l, --latest     Instead of specifying a date, use the most recent available.
 " >&2
 end
 
@@ -448,7 +450,7 @@ function main
         'l/latest' \
         -- $argv
     or begin
-        echo 'Error parsing arguments' >&2
+        echo 'Error occurred while parsing arguments' >&2
         _print_usage
         return 1
     end
