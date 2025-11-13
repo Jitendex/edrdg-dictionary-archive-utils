@@ -1,7 +1,7 @@
 #!/usr/bin/env fish
 #
 # edrdg_dictionary_archive.fish
-# Version 2025.11.12.1
+# Version 2025.11.12.2
 #
 # Copyright (c) 2025 Stephen Kraus
 # SPDX-License-Identifier: Apache-2.0
@@ -30,6 +30,7 @@ set FILENAMES \
     'kanjidic2.xml' \
     'examples.utf'
 
+set RSYNC_SRC 'ftp.edrdg.org::nihongo'
 set HTTPS_REPO "https://github.com/Jitendex/edrdg-dictionary-archive"
 set REMOTE 'origin'
 set BRANCH 'main'
@@ -217,7 +218,7 @@ function _get_latest_file -a file_name
 end
 
 function _rsync_ftp_file_update -a file_name file_path
-    set src 'ftp.edrdg.org::nihongo'/"$file_name"
+    set src "$RSYNC_SRC"/"$file_name"
     set dest "$file_path"
     rsync "$src" "$dest"
 end
@@ -234,6 +235,7 @@ function _get_file_date -a file_name file_path
         case 'examples.utf'
             date '+%Y-%m-%d'
         case '*'
+            echo "_get_file_date: Invalid file name `$file_name`" >&2
             return 1
     end
 end
@@ -421,7 +423,7 @@ function _print_usage
 
     Commands:
       get       Build a specified file and print its path
-      update    Get the latest file data from the EDRDG FTP server,
+      update    Get the latest file data from '$RSYNC_SRC',
                 add the patches to the archive, and commit to Git.
 
     General Options
@@ -464,7 +466,7 @@ function main
         echo "No command argument given" >&2
         _print_usage
         return 1
-    else if not contains "$argv" $COMMANDS
+    else if not contains "$argv" 'get' 'update'
         echo "Invalid command argument: `$argv`" >&2
         _print_usage
         return 1
