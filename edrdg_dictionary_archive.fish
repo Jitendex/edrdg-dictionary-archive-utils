@@ -1,7 +1,7 @@
 #!/usr/bin/env fish
 #
 # edrdg_dictionary_archive.fish
-# Version 2025.11.12.3
+# Version 2025.11.12.4
 #
 # Copyright (c) 2025 Stephen Kraus
 # SPDX-License-Identifier: Apache-2.0
@@ -31,7 +31,7 @@ set FILENAMES \
     'examples.utf'
 
 set RSYNC_SRC 'ftp.edrdg.org::nihongo'
-set HTTPS_REPO "https://github.com/Jitendex/edrdg-dictionary-archive"
+set HTTPS_REPO 'https://github.com/Jitendex/edrdg-dictionary-archive'
 set REMOTE 'origin'
 set BRANCH 'main'
 
