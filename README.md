@@ -82,13 +82,25 @@ A systemd service unit and timer are included for running this script daily.
 To push commits to GitHub without entering a password, a
 [fine-grained personal access token (PAT)](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
 should be created and given "content" privileges for the relevant repo.
-If git is configured to store credentials (`git config credential.helper store`),
-it will save the PAT to `~/.git-credentials` after the token is used
-for the first time.
+
+If git is configured to store credentials, it will save the PAT to
+`~/.git-credentials` after the token is used for the first time.
+
+```
+git config credential.helper store
+```
 
 # Dependencies
 
 In addition to the the `fish` shell and the standard GNU coreutils
 (`mkdir`, `cp`, `rm`, `date`, etc.), these scripts also expect the
-commands `git`, `rsync`, `brotli`, `patch`, `diff`, `cmp`, `grep`,
-and `uuidgen` to be available.
+following commands to be available.
+
+- `git`
+- `rsync`
+- `brotli`
+- `patch`
+- `diff`
+- `cmp`
+- `grep`
+- `uuidgen`
