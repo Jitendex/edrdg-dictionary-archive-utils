@@ -1,0 +1,13 @@
+# /etc/systemd/system/edrdg-dictionary-archive-update.timer
+
+[Unit]
+Description=daily edrdg-dictionary-archive update
+
+[Timer]
+RandomizedDelaySec=3600
+OnCalendar=*-*-* 04:00:00 UTC
+Unit=edrdg-dictionary-archive-update.service
+
+[Install]
+WantedBy=timers.target
+

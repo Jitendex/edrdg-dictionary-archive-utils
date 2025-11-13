@@ -1,13 +1,13 @@
-# /etc/systemd/system/edrdg-dictionary-archive-update-git.service
+# /etc/systemd/system/edrdg-dictionary-archive-update.service
 
 [Unit]
-Description=edrdg-dictionary-archive git update script
+Description=edrdg-dictionary-archive update script
 After=network-online.target
 Wants=network-online.target
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/fish edrdg-dictionary-archive/scripts/update_git.fish
+ExecStart=edrdg_dictionary_archive update
 Environment=TZ="Etc/UTC"
 User=edrdg-dictionary-archive
 Group=edrdg-dictionary-archive
@@ -17,7 +17,7 @@ WorkingDirectory=~
 # See: https://wiki.archlinux.org/title/Systemd/Sandboxing
 
 # Generate a security score and list of suggestions by running
-# `systemd-analyze security edrdg-dictionary-archive-update-git.service`
+# `systemd-analyze security edrdg-dictionary-archive-update.service`
 
 # Capabilities
 AmbientCapabilities=
