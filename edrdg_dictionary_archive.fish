@@ -16,7 +16,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set VERSION   '2025.11.14.1'
+set VERSION   '2025.11.14.2'
 set ORG_NAME  'Jitendex'
 set PROJ_NAME 'edrdg-dictionary-archive'
 
@@ -54,6 +54,8 @@ end
 function _make_tmp_dir
     set tmp_dir "/tmp/$ORG_NAME-$PROJ_NAME-$TMP_ID"
 
+    # By design, this script should only need one `tmp_dir` instance open at any given time.
+    # The uncompressed XML files are very large, so this constraint keeps memory usage to a minimum.
     if test -d "$tmp_dir"
         rm -r "$tmp_dir"
     end
@@ -226,7 +228,7 @@ function _rsync_ftp_file_update -a file_name file_path
     rsync "$src" "$dest"
 end
 
-function _get_file_date -a file_name file_path
+function _get_date_from_file -a file_name file_path
     set date_pattern '[0-9]{4}-[0-9]{2}-[0-9]{2}'
     switch "$file_name"
         case 'JMdict' 'JMdict_e' 'JMdict_e_examp'
@@ -282,7 +284,7 @@ function _make_new_patch -a file_name
     end
 
     set old_date (_get_latest_date "$file_name")
-    set new_date (_get_file_date "$file_name" "$new_file")
+    set new_date (_get_date_from_file "$file_name" "$new_file")
     or begin
         echo "Cannot parse date from updated $file_name file" >&2
         return 1
@@ -531,7 +533,7 @@ function main
             if set -q _flag_file
                 set file_name "$_flag_file"
             else
-                echo 'FILE must be one of '(string join ' ' $FILENAMES) >&2
+                echo '<file> must be one of '(string join ' ' $FILENAMES) >&2
                 _print_usage
                 return 1
             end
