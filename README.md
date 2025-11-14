@@ -43,7 +43,7 @@ Options for the 'get' Command
         kanjidic2.xml
         examples.utf
 
-  -d, --date=<YYYY-MM-DD>
+  -d, --date=YYYY-MM-DD
       Date of the file to get.
 
   -l, --latest

@@ -457,7 +457,7 @@ function _print_usage
           Name of the file to get. Must be one of
           $(string join ' ' $FILENAMES)
 
-      -d, --date=<YYYY-MM-DD>
+      -d, --date=YYYY-MM-DD
           Date of the file to get.
 
       -l, --latest
