@@ -16,7 +16,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set VERSION   '2025.11.14.0'
+set VERSION   '2025.11.14.1'
 set ORG_NAME  'Jitendex'
 set PROJ_NAME 'edrdg-dictionary-archive'
 
@@ -71,7 +71,7 @@ function _make_tmp_dir
 end
 
 function _get_file_dir -a file_name
-    set file_dir_name (string replace -a '.' '_' "$file_name")
+    set file_dir_name (string replace --all '.' '_' "$file_name")
     echo "$DATA_DIR"/"$file_dir_name"
 end
 
@@ -142,7 +142,7 @@ end
 
 function _get_existing_patchfile -a file_name file_date
     set file_dir (_get_file_dir "$file_name")
-    set patch_path (string replace -a '-' '/' "$file_date")
+    set patch_path (string replace --all '-' '/' "$file_date")
     set patchfile "$file_dir"/patches/"$patch_path".patch.br
 
     if test -e "$patchfile"

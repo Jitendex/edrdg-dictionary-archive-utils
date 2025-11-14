@@ -26,7 +26,7 @@ General Options
 
   -r, --repo-dir=<path>
       Path to the local edrdg-dictionary-archive Git repo.
-      Default: '$XDG_DATA_HOME/edrdg-dictionary-archive'
+      Default: '$XDG_DATA_HOME/Jitendex/edrdg-dictionary-archive'
 
   -i, --init
       Download the edrdg-dictionary-archive Git repo from
@@ -63,8 +63,8 @@ fish edrdg_dictionary_archive.fish get --file=kanjidic2.xml --latest
 ```
 
 The resulting file is compressed and written to the user's cache
-directory (`$XDG_CACHE_HOME`). The full path to the Brotli-compressed
-file is printed to `stdout`.
+directory (in `$XDG_CACHE_HOME`). The full path to the
+Brotli-compressed file is printed to `stdout`.
 
 If an older version of the file is present in the user's cache, the
 script will use it as the base file for patching. For example, if a
