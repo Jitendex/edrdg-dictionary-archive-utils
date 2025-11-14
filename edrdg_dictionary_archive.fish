@@ -16,60 +16,63 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set VERSION '2025.11.12.4'
+set VERSION   '2025.11.14.0'
+set ORG_NAME  'Jitendex'
+set PROJ_NAME 'edrdg-dictionary-archive'
 
-set FILENAMES \
-    'JMdict' \
-    'JMdict_e' \
-    'JMdict_e_examp' \
-    'JMnedict.xml' \
-    'kanjidic2.xml' \
-    'examples.utf'
+set FILENAMES 'JMdict' \
+              'JMdict_e' \
+              'JMdict_e_examp' \
+              'JMnedict.xml' \
+              'kanjidic2.xml' \
+              'examples.utf'
 
 set RSYNC_SRC 'ftp.edrdg.org::nihongo'
-set HTTPS_REPO 'https://github.com/Jitendex/edrdg-dictionary-archive'
+set HTTPS_REPO "https://github.com/$ORG_NAME/$PROJ_NAME"
+
 set REMOTE 'origin'
 set BRANCH 'main'
 
-function _get_file_dir -a file_name
-    set file_dir_name (string replace -a '.' '_' "$file_name")
-    echo "$DATA_DIR"/"$file_dir_name"
-end
+set TMP_ID (base32 < /dev/urandom | head -c 8)
 
-function _get_data_dir
-    set data_dir 'edrdg-dictionary-archive'
+function _get_default_data_dir
     if set -q XDG_DATA_HOME
-        echo "$XDG_DATA_HOME"/"$data_dir"
+        echo "$XDG_DATA_HOME"/"$ORG_NAME"/"$PROJ_NAME"
     else
-        echo "$HOME"/'.local'/'share'/"$data_dir"
+        echo "$HOME"/'.local'/'share'/"$ORG_NAME"/"$PROJ_NAME"
     end
 end
 
 function _get_cache_dir -a file_date
-    set cache_dir 'edrdg-dictionary-archive'
     if set -q XDG_CACHE_HOME
-        echo "$XDG_CACHE_HOME"/"$cache_dir"/"$file_date"
+        echo "$XDG_CACHE_HOME"/"$ORG_NAME"/"$PROJ_NAME"/"$file_date"
     else
-        echo "$HOME"/'.cache'/"$cache_dir"/"$file_date"
+        echo "$HOME"/'.cache'/"$ORG_NAME"/"$PROJ_NAME"/"$file_date"
     end
 end
 
 function _make_tmp_dir
-    set uuid (uuidgen | cut -c1-8)
-    set tmp_dir "/tmp/edrdg-dictionary-archive-$uuid"
+    set tmp_dir "/tmp/$ORG_NAME-$PROJ_NAME-$TMP_ID"
 
-    echo "Creating temporary working directory '$tmp_dir'" >&2
+    if test -d "$tmp_dir"
+        rm -r "$tmp_dir"
+    end
+
     mkdir -p -m 700 "$tmp_dir"
 
     # Ensure directory gets removed even if script exits early or crashes.
-    function tmp_dir_cleanup_$uuid --inherit-variable tmp_dir --on-event fish_exit
+    function tmp_dir_cleanup --inherit-variable tmp_dir --on-event fish_exit
         if test -d "$tmp_dir"
-            echo "Deleting temporary working directory '$tmp_dir'" >&2
             rm -r "$tmp_dir"
         end
     end
 
     echo "$tmp_dir"
+end
+
+function _get_file_dir -a file_name
+    set file_dir_name (string replace -a '.' '_' "$file_name")
+    echo "$DATA_DIR"/"$file_dir_name"
 end
 
 function _get_latest_date -a file_name
@@ -235,7 +238,7 @@ function _get_file_date -a file_name file_path
         case 'examples.utf'
             date '+%Y-%m-%d'
         case '*'
-            echo "_get_file_date: Invalid file name `$file_name`" >&2
+            echo "Invalid file name `$file_name`" >&2
             return 1
     end
 end
@@ -371,8 +374,8 @@ function _set_temporary_updater_git_config
         _set_git_config 'commit.gpgsign' "$gpgsign"
     end
 
-    _set_git_config 'user.name'      'edrdg-dictionary-archive'
-    _set_git_config 'user.email'     'edrdg-dictionary-archive@noreply.jitendex.org'
+    _set_git_config 'user.name'      "$PROJ_NAME"
+    _set_git_config 'user.email'     "$PROJ_NAME@noreply.$ORG_NAME.org"
     _set_git_config 'commit.gpgsign' 'false'
 end
 
@@ -439,11 +442,11 @@ function _print_usage
           Print the version of this script.
 
       -r, --repo-dir=<path>
-          Path to the local edrdg-dictionary-archive Git repo.
-          Default: '$(_get_data_dir)'
+          Path to the local $PROJ_NAME Git repo.
+          Default: '$(_get_default_data_dir)'
 
       -i, --init
-          Download the edrdg-dictionary-archive Git repo from
+          Download the $PROJ_NAME Git repo from
           $HTTPS_REPO
           if it doesn't already exist.
 
@@ -501,7 +504,7 @@ function main
     if set -q _flag_repo_dir
         set --global DATA_DIR "$_flag_repo_dir"
     else
-        set --global DATA_DIR (_get_data_dir)
+        set --global DATA_DIR (_get_default_data_dir)
     end
 
     if not test -e "$DATA_DIR"

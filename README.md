@@ -125,7 +125,6 @@ following commands to be available.
 - `diff`
 - `cmp`
 - `grep`
-- `uuidgen`
 
 # License
 
