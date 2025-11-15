@@ -16,7 +16,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set VERSION   '2025.11.14.2'
+set VERSION   '2025.11.15.0'
 set ORG_NAME  'Jitendex'
 set PROJ_NAME 'edrdg-dictionary-archive'
 
@@ -376,8 +376,8 @@ function _set_temporary_updater_git_config
         _set_git_config 'commit.gpgsign' "$gpgsign"
     end
 
-    _set_git_config 'user.name'      "$PROJ_NAME"
-    _set_git_config 'user.email'     "$PROJ_NAME@noreply.$ORG_NAME.org"
+    _set_git_config 'user.name'      "$PROJ_NAME-update"
+    _set_git_config 'user.email'     "$PROJ_NAME-update@noreply.$ORG_NAME.org"
     _set_git_config 'commit.gpgsign' 'false'
 end
 
