@@ -126,6 +126,9 @@ following commands to be available.
 - `cmp`
 - `grep`
 
+This [PKGBUILD script for Arch Linux](https://gist.github.com/stephenmk/208c5e95f2d57c7db5cd77247b19c2f7)
+might serve as a useful example for packaging the files for other platforms.
+
 # License
 
 Copyright (c) 2025 Stephen Kraus
