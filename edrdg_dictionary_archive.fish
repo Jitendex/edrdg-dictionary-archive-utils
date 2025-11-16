@@ -16,8 +16,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set VERSION   '2025.11.15.0'
-set ORG_NAME  'Jitendex'
+set VERSION   '2025.11.16.0'
+set ORG_NAME  'jitendex'
 set PROJ_NAME 'edrdg-dictionary-archive'
 
 set FILENAMES 'JMdict' \
