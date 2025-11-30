@@ -16,7 +16,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set VERSION   '2025.11.16.0'
+set VERSION   '2025.11.29.0'
 set ORG_NAME  'jitendex'
 set PROJ_NAME 'edrdg-dictionary-archive'
 
@@ -35,6 +35,7 @@ set BRANCH 'main'
 
 set TMP_ID (base32 < /dev/urandom | head -c 8)
 
+# Output of this function will be stored in global DATA_DIR if no path option is specified.
 function _get_default_data_dir
     if set -q XDG_DATA_HOME
         echo "$XDG_DATA_HOME"/"$ORG_NAME"/"$PROJ_NAME"
@@ -43,11 +44,12 @@ function _get_default_data_dir
     end
 end
 
-function _get_cache_dir -a file_date
+function _get_cache_dir -a file_name
+    set file_dir_name (string replace --all '.' '_' "$file_name")
     if set -q XDG_CACHE_HOME
-        echo "$XDG_CACHE_HOME"/"$ORG_NAME"/"$PROJ_NAME"/"$file_date"
+        echo "$XDG_CACHE_HOME"/"$ORG_NAME"/"$PROJ_NAME"/"$file_dir_name"
     else
-        echo "$HOME"/'.cache'/"$ORG_NAME"/"$PROJ_NAME"/"$file_date"
+        echo "$HOME"/'.cache'/"$ORG_NAME"/"$PROJ_NAME"/"$file_dir_name"
     end
 end
 
@@ -104,8 +106,8 @@ function _get_zeroth_patchfile -a file_name final_patchfile tmp_dir
 
     for patchfile in "$file_dir"/patches/**.patch.br
         set --local patchfile_date (_patchfile_to_date "$patchfile")
-        set --local cache_dir (_get_cache_dir "$patchfile_date")
-        set --local cached_file "$cache_dir"/"$file_name".br
+        set --local cache_dir (_get_cache_dir "$file_name")
+        set --local cached_file "$cache_dir"/"$patchfile_date".br
 
         if test -e "$cached_file"
             set zeroth_patchfile "$patchfile"
@@ -156,8 +158,8 @@ function _get_existing_patchfile -a file_name file_date
 end
 
 function _get_file_by_date -a file_name file_date
-    set output_dir (_get_cache_dir "$file_date")
-    set output_file "$output_dir"/"$file_name".br
+    set output_dir (_get_cache_dir "$file_name")
+    set output_file "$output_dir"/"$file_date".br
 
     # Exit quickly if cached file already exists.
     if test -e "$output_file"
@@ -330,13 +332,13 @@ function _make_new_patch -a file_name
         --output="$archived_patch_path" \
         -- "$patch_path"
 
-    set cache_dir (_get_cache_dir "$new_date")
+    set cache_dir (_get_cache_dir "$file_name")
     mkdir -p "$cache_dir"
 
     echo "Compressing updated $file_name to cache dir '$cache_dir'" >&2
 
     brotli -4 \
-        --output="$cache_dir"/"$file_name".br \
+        --output="$cache_dir"/"$new_date".br \
         -- "$new_file"
 
     echo "Deleting old $file_name from cache" >&2
