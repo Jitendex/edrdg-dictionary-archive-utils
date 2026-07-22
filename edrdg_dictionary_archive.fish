@@ -1,7 +1,7 @@
 #!/usr/bin/env fish
 #
 # edrdg_dictionary_archive.fish
-# Copyright (c) 2025 Stephen Kraus
+# Copyright (c) 2025-2026 Stephen Kraus
 # SPDX-License-Identifier: Apache-2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set VERSION   '2026.05.10.0'
+set VERSION   '2026.07.21.0'
 set ORG_NAME  'jitendex'
 set PROJ_NAME 'edrdg-dictionary-archive'
 
@@ -35,9 +35,13 @@ set HTTPS_REPO "https://github.com/$ORG_NAME/$PROJ_NAME"
 set REMOTE 'origin'
 set BRANCH 'main'
 
+set GIT_DEFAULT_NAME "$PROJ_NAME"-update
+set GIT_DEFAULT_EMAIL "$GIT_DEFAULT_NAME"@"$ORG_NAME".org
+
 set TMP_ID (base32 < /dev/urandom | head -c 8)
 
-# Output of this function will be stored in global DATA_DIR if no path option is specified.
+# Output of this function will be stored in global DATA_DIR variable
+# if no path option is specified.
 function _get_default_data_dir
     if set -q XDG_DATA_HOME
         echo "$XDG_DATA_HOME"/"$ORG_NAME"/"$PROJ_NAME"
@@ -58,8 +62,9 @@ end
 function _make_tmp_dir
     set tmp_dir "/tmp/$ORG_NAME-$PROJ_NAME-$TMP_ID"
 
-    # By design, this script should only need one `tmp_dir` instance open at any given time.
-    # The uncompressed XML files are very large, so this constraint keeps memory usage to a minimum.
+    # By design, this script should only need one `tmp_dir` instance
+    # open at any given time. The uncompressed XML files are very
+    # large, so this constraint keeps memory usage to a minimum.
     if test -d "$tmp_dir"
         rm -r "$tmp_dir"
     end
@@ -138,6 +143,7 @@ function _get_zeroth_patchfile -a file_name final_patchfile tmp_dir
     echo "Decompressing cached file '$zeroth_file' to '$tmp_dir'" >&2
 
     brotli --decompress \
+        --no-copy-stat \
         --output="$tmp_dir"/"$file_name" \
         -- "$zeroth_file"
 
@@ -192,7 +198,9 @@ function _get_file_by_date -a file_name file_date
 
         set -l decompressed_patchfile "$tmp_dir"/'next.patch'
 
-        brotli --decompress --force \
+        brotli --decompress \
+            --force \
+            --no-copy-stat \
             --output="$decompressed_patchfile" \
             -- "$patchfile"
 
@@ -210,6 +218,7 @@ function _get_file_by_date -a file_name file_date
     mkdir -p "$output_dir"
 
     brotli -4 \
+        --no-copy-stat \
         --output="$output_file" \
         -- "$tmp_dir"/"$file_name"
 
@@ -234,15 +243,24 @@ end
 
 function _get_date_from_file -a file_name file_path
     set date_pattern '[0-9]{4}-[0-9]{2}-[0-9]{2}'
+
     switch "$file_name"
-        case 'JMdict' 'JMdict_b_NG' 'JMdict_e' 'JMdict_e_NG' 'JMdict_e_examp'
+        case 'JMdict' \
+            'JMdict_b_NG' \
+            'JMdict_e' \
+            'JMdict_e_NG' \
+            'JMdict_e_examp'
             grep -m 1 '^<!-- JMdict created:' "$file_path" | grep -Eo "$date_pattern"
+
         case 'JMnedict.xml'
             grep -m 1 '^<!-- JMnedict created:' "$file_path" | grep -Eo "$date_pattern"
+
         case 'kanjidic2.xml'
             grep -m 1 '^<date_of_creation>' "$file_path" | grep -Eo "$date_pattern"
+
         case 'examples.utf'
             date '+%Y-%m-%d'
+
         case '*'
             echo "Invalid file name `$file_name`" >&2
             return 1
@@ -271,6 +289,7 @@ function _make_new_patch -a file_name
     set new_file "$tmp_dir"/"$file_name"
 
     brotli --decompress \
+        --no-copy-stat \
         --output="$old_file" \
         -- "$old_file_compressed"
 
@@ -331,6 +350,7 @@ function _make_new_patch -a file_name
     echo "Compressing new patch to '$archived_patch_path'" >&2
 
     brotli --best \
+        --no-copy-stat \
         --output="$archived_patch_path" \
         -- "$patch_path"
 
@@ -340,6 +360,7 @@ function _make_new_patch -a file_name
     echo "Compressing updated $file_name to cache dir '$cache_dir'" >&2
 
     brotli -4 \
+        --no-copy-stat \
         --output="$cache_dir"/"$new_date".br \
         -- "$new_file"
 
@@ -359,30 +380,6 @@ function _make_new_patch -a file_name
     rm -r "$tmp_dir"
 
     echo "$archived_patch_path"
-end
-
-function _get_git_config -a key
-    git -C "$DATA_DIR" config --local "$key"
-end
-
-function _set_git_config -a key value
-    git -C "$DATA_DIR" config --local "$key" "$value"
-end
-
-function _set_temporary_updater_git_config
-    set name    (_get_git_config 'user.name')
-    set email   (_get_git_config 'user.email')
-    set gpgsign (_get_git_config 'commit.gpgsign')
-
-    function _config_reset --on-event fish_exit -V name -V email -V gpgsign
-        _set_git_config 'user.name'      "$name"
-        _set_git_config 'user.email'     "$email"
-        _set_git_config 'commit.gpgsign' "$gpgsign"
-    end
-
-    _set_git_config 'user.name'      "$PROJ_NAME-update"
-    _set_git_config 'user.email'     "$PROJ_NAME-update@noreply.$ORG_NAME.org"
-    _set_git_config 'commit.gpgsign' 'false'
 end
 
 function _git_add -a file_name
@@ -407,19 +404,41 @@ function _added_files_are_valid
     end
 end
 
-function _git_commit_and_push
-    if _added_files_are_valid
-        _set_temporary_updater_git_config
-        git -C "$DATA_DIR" commit --message="$(date '+%B %d %Y')"
-        git -C "$DATA_DIR" push "$REMOTE" "$BRANCH"
-    else
-        return 1
+function _set_default_git_config
+    if not git -C "$DATA_DIR" config 'user.name' >/dev/null
+        git -C "$DATA_DIR" config --local 'user.name' "$GIT_DEFAULT_NAME"
+    end
+
+    if not git -C "$DATA_DIR" config 'user.email' >/dev/null
+        git -C "$DATA_DIR" config --local 'user.email' "$GIT_DEFAULT_EMAIL"
     end
 end
 
-function _update_git
+function _git_commit_and_push
+    if _added_files_are_valid
+        _set_default_git_config
+        git -C "$DATA_DIR" commit --message="$(date '+%B %d %Y')"
+        git -C "$DATA_DIR" push "$REMOTE" "$BRANCH"
+    else
+        exit 1
+    end
+end
+
+function _git_verify
+    git -C "$DATA_DIR" verify-commit HEAD
+    or begin
+        echo "Error: HEAD commit failed signature verification." >&2
+        exit 1
+    end
+end
+
+function _update_git -a verify
     git -C "$DATA_DIR" pull "$REMOTE" "$BRANCH"
     git -C "$DATA_DIR" checkout "$BRANCH"
+
+    if test $verify
+        _git_verify
+    end
 
     for filename in $FILENAMES
         _git_add "$filename"
@@ -456,6 +475,9 @@ function _print_usage
           $HTTPS_REPO
           if it doesn't already exist.
 
+      -s, --verify-signature
+          Verify GPG signature of latest git commit.
+
     Options for the 'get' Command
       -f, --file=<file>
           Name of the file to get. Must be one of
@@ -475,6 +497,7 @@ function main
         'v/version' \
         'r/repo-dir=!test -d "$_flag_value"' \
         'i/init' \
+        's/verify-signature' \
         'f/file=!string match -rq \'^'(string join '|' $FILENAMES)'$\' "$_flag_value"' \
         'd/date=!string match -rq \'^[0-9]{4}-[0-1][0-9]-[0-3][0-9]$\' "$_flag_value"' \
         'l/latest' \
@@ -532,6 +555,10 @@ function main
         return 1
     end
 
+    if set -q _flag_verify_signature
+        _git_verify
+    end
+
     switch "$command"
         case 'get'
             if set -q _flag_file
@@ -553,7 +580,7 @@ function main
             end
 
         case 'update'
-            _update_git
+            _update_git (set -q _flag_verify_signature)
 
         case '*'
             echo "Invalid command `$command`" >&2
