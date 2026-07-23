@@ -557,12 +557,12 @@ function main
         return 1
     end
 
-    if set -q _flag_verify_signature
-        _git_verify
-    end
-
     switch "$command"
         case 'get'
+            if set -q _flag_verify_signature
+                _git_verify
+            end
+
             if set -q _flag_file
                 set file_name "$_flag_file"
             else
