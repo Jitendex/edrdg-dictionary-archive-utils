@@ -16,15 +16,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set VERSION   '2026.07.21.0'
+set VERSION   '2026.07.22.0'
 set ORG_NAME  'jitendex'
 set PROJ_NAME 'edrdg-dictionary-archive'
 
 set FILENAMES 'JMdict' \
-              'JMdict_b_NG' \
+              'JMdict_b' \
               'JMdict_e' \
-              'JMdict_e_NG' \
               'JMdict_e_examp' \
+              'JMdict_b_NG' \
+              'JMdict_e_NG' \
               'JMnedict.xml' \
               'kanjidic2.xml' \
               'examples.utf'
@@ -246,10 +247,11 @@ function _get_date_from_file -a file_name file_path
 
     switch "$file_name"
         case 'JMdict' \
-            'JMdict_b_NG' \
+            'JMdict_b' \
             'JMdict_e' \
-            'JMdict_e_NG' \
-            'JMdict_e_examp'
+            'JMdict_e_examp' \
+            'JMdict_b_NG' \
+            'JMdict_e_NG'
             grep -m 1 '^<!-- JMdict created:' "$file_path" | grep -Eo "$date_pattern"
 
         case 'JMnedict.xml'
