@@ -426,7 +426,7 @@ function _git_commit_and_push
     end
 end
 
-function _git_verify
+function _git_verify_signature
     git -C "$DATA_DIR" verify-commit HEAD
     or begin
         echo "Error: HEAD commit failed signature verification." >&2
@@ -434,12 +434,12 @@ function _git_verify
     end
 end
 
-function _update_git -a verify
+function _update_git -a verify_signature
     git -C "$DATA_DIR" pull "$REMOTE" "$BRANCH"
     git -C "$DATA_DIR" checkout "$BRANCH"
 
-    if test $verify
-        _git_verify
+    if $verify_signature
+        _git_verify_signature
     end
 
     for filename in $FILENAMES
@@ -560,7 +560,7 @@ function main
     switch "$command"
         case 'get'
             if set -q _flag_verify_signature
-                _git_verify
+                _git_verify_signature
             end
 
             if set -q _flag_file
@@ -582,7 +582,11 @@ function main
             end
 
         case 'update'
-            _update_git (set -q _flag_verify_signature)
+            if set -q _flag_verify_signature
+                _update_git true
+            else
+                _update_git false
+            end
 
         case '*'
             echo "Invalid command `$command`" >&2
