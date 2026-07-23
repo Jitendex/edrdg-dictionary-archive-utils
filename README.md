@@ -33,12 +33,19 @@ General Options
       https://github.com/Jitendex/edrdg-dictionary-archive
       if it doesn't already exist.
 
+  -s, --verify-signature
+      Verify GPG signature of latest git commit.
+
 Options for the 'get' Command
   -f, --file=<file>
       Name of the file to get. Must be one of
         JMdict
+        JMdict_b
         JMdict_e
         JMdict_e_examp
+        JMdict_b_NG
+        JMdict_e_NG
+        JMdict_e_NG_examp
         JMnedict.xml
         kanjidic2.xml
         examples.utf
@@ -125,13 +132,14 @@ following commands to be available.
 - `diff`
 - `cmp`
 - `grep`
+- `gpg`
 
-This [PKGBUILD script for Arch Linux](https://gist.github.com/stephenmk/208c5e95f2d57c7db5cd77247b19c2f7)
+The [PKGBUILD script for Arch Linux](https://github.com/Jitendex/arch-linux-packages)
 might serve as a useful example for packaging the files for other platforms.
 
 # License
 
-Copyright (c) 2025 Stephen Kraus
+Copyright (c) 2025-2026 Stephen Kraus
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use these files except in compliance with the License.
